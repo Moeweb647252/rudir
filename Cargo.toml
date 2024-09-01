@@ -1,0 +1,19 @@
+[package]
+name = "rudir"
+version = "0.1.0"
+edition = "2021"
+
+[build]
+rustflags = ["-C", "target-cpu=native"]
+
+[profile.release]
+lto = true
+strip = true
+panic = "abort"
+codegen-units = 1
+opt-level = 3
+
+[dependencies]
+clap = { version = "4.5.16", features = ["derive"] }
+hashbrown = "0.14.5"
+tokio = { version = "1.39.3", features = ["net", "macros", "rt-multi-thread"] }
