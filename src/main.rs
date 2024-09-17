@@ -87,6 +87,7 @@ struct Args {
     #[arg(short = 'm', long, default_value_t = 63)]
     max_client: usize,
 
+    #[arg(short = '4', long, default_value = "false")]
     ipv4: bool,
 }
 
