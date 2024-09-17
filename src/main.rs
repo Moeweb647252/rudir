@@ -13,7 +13,7 @@ const LINUX_KERNEL_TXT: &'static [u8] = include_bytes!("../assets/linux_kernel.t
 async fn run(
     bind_addr: SocketAddr,
     remote_addr: SocketAddr,
-    ipv4: bool,
+    ip: &str,
     max_client: usize,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let socket = Arc::new(UdpSocket::bind(&bind_addr).await?);
@@ -38,15 +38,13 @@ async fn run(
                     addr_map = HashMap::new();
                     handle_list = Vec::new();
                 }
-                let sock_temp = Arc::new(
-                    match UdpSocket::bind(if ipv4 { "0.0.0.0:0" } else { "[::]:0" }).await {
-                        Ok(sock) => sock,
-                        Err(e) => {
-                            println!("Error: {}", e);
-                            continue;
-                        }
-                    },
-                );
+                let sock_temp = Arc::new(match UdpSocket::bind(format!("{}:0", ip)).await {
+                    Ok(sock) => sock,
+                    Err(e) => {
+                        println!("Error: {}", e);
+                        continue;
+                    }
+                });
                 addr_map.insert(addr, sock_temp.clone());
                 if let Err(e) = sock_temp.connect(&remote_addr).await {
                     println!("Error: {}", e);
@@ -87,8 +85,8 @@ struct Args {
     #[arg(short = 'm', long, default_value_t = 63)]
     max_client: usize,
 
-    #[arg(short = '4', long, default_value = "false")]
-    ipv4: bool,
+    #[arg(short = 'i', long, default_value = "[::]")]
+    ip: String,
 }
 
 fn parse_socket_addr(hostname_port: &str) -> std::io::Result<SocketAddr> {
@@ -104,5 +102,5 @@ fn parse_socket_addr(hostname_port: &str) -> std::io::Result<SocketAddr> {
 fn main() {
     let args = Args::parse();
 
-    run(args.bind, args.remote, args.ipv4, args.max_client).unwrap();
+    run(args.bind, args.remote, &args.ip, args.max_client).unwrap();
 }
