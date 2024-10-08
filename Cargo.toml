@@ -2,6 +2,11 @@
 name = "rudir"
 version = "0.1.0"
 edition = "2021"
+description = "A simple and fast udp port forwarding tool"
+homepage = "https://github.com/Moeweb647252/rudir"
+repository = "https://github.com/Moeweb647252/rudir"
+readme = "README.md"
+license = "MIT"
 
 
 [build]
